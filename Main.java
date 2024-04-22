@@ -72,16 +72,41 @@ public class Main
 			return Errors.FAILURE;
 		}
 
-		for (char c : expr.toCharArray())
+		char[] chars = expr.toCharArray();
+
+		for (char i = 0; i < chars.length; i++)
+		{
+			char c = chars[i];
 			if (Character.isDigit(c))
 				stack.push(Double.parseDouble("" + c));
+			else if (c == '(')
+			{
+				String buf = "";
+				while (true)
+				{
+					c = chars[++i];
+					if (c == ')')
+						break;
+					buf += c;
+				}
+				stack.push(Double.parseDouble(buf));
+			}
 			else
 			{
-				var a1 = stack.pop();
-				var a0 = stack.pop();
-				var res = calculate(a0, a1, c);
-				stack.push(res);
+				try
+				{
+					var a1 = stack.pop();
+					var a0 = stack.pop();
+					var res = calculate(a0, a1, c);
+					stack.push(res);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					return Errors.FAILURE;
+				}
 			}
+		}
 
 		return Errors.SUCCESS;
 	}
